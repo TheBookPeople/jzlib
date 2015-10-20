@@ -102,8 +102,15 @@ public class InflaterInputStream extends FilterInputStream {
     int n = 0;
     inflater.setOutput(b, off, len);
     while(!eof) {
-      if(inflater.avail_in==0)
-        fill();
+      if(inflater.avail_in==0) {
+        try {
+            fill();
+        } catch(EOFException ex) {
+//            ex.printStackTrace();
+            eof = true;
+            break;
+        }
+      }
       int err = inflater.inflate(JZlib.Z_NO_FLUSH);
       n += inflater.next_out_index - off;
       off = inflater.next_out_index;
